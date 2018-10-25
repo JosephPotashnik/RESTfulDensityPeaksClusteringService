@@ -1,0 +1,195 @@
+﻿<!-- Styles -->
+<style>
+    #chartdiv {
+        height: 500px;
+        width: 100%;
+    }
+</style>
+
+<!-- Resources -->
+<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+<script src="https://www.amcharts.com/lib/3/xy.js"></script>
+<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all"/>
+<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+<script src="https://www.amcharts.com/lib/3/plugins/dataloader/dataloader.min.js" type="text/javascript"></script>
+
+<!-- Chart code -->
+
+<script>
+
+    var chart = AmCharts.makeChart("chartdiv",
+        {
+            "type": "xy",
+            "dataLoader": {
+                "url": "pathBased.csv",
+                "format": "csv",
+                "delimiter": ",",
+                "useColumnNames": true
+            },
+            "valueAxes": [
+                {
+                    "position": "bottom",
+                    "axisAlpha": 0
+                }, {
+                    "minMaxMultiplier": 1.2,
+                    "axisAlpha": 0,
+                    "position": "left"
+                }
+            ],
+            "startDuration": 1.5,
+            "graphs": [
+                {
+                    "balloonText": "x:<b>[[x]]</b> y:<b>[[y]]</b><br>value:<b>[[value]]</b>",
+                    "bullet": "circle",
+                    "bulletBorderAlpha": 0.2,
+                    "bulletAlpha": 0.8,
+                    "colorField": "color",
+                    "lineAlpha": 0,
+                    "fillAlphas": 0,
+                    "valueField": 50,
+                    "xField": "x",
+                    "yField": "y",
+                    "maxBulletSize": 100
+                }
+            ],
+            "marginLeft": 46,
+            "marginBottom": 35
+        });
+</script>
+
+<!-- HTML -->
+
+
+<body>
+    <input type="button" id="JainDataset" value="Jain Dataset" onclick="javascript:LoadDataset('Jain.csv');" ; />
+    <input type="button" id="pathBasedDataset" value="pathBased Dataset" onclick="javascript:LoadDataset('pathBased.csv');" ; />
+    <input type="button" id="spiralDataset" value="spiral Dataset" onclick="javascript:LoadDataset('spiral.csv');" ; />
+    <input type="button" id="S1Dataset" value="S1 Dataset" onclick="javascript:LoadDataset('s1.csv');" ; />
+    <input type="button" id="FlameDataset" value="Flame Dataset" onclick="javascript:LoadDataset('flame.csv');" ; />
+    <input type="button" id="ZahnDataset" value="Zahn Dataset" onclick="javascript:LoadDataset('zahn.csv');" ; />
+    <input type="button" id="ChameleonDataset" value="Chameleon Dataset" onclick="javascript:LoadDataset('chameleon.csv');" ;/>
+
+    <div id="chartdiv"></div>
+    <div>
+        <input type="button" id="Cluster" value="Cluster!" onclick="javascript:Clusterize();" />
+    </div>
+</body>
+
+<script type="text/javascript">
+    function LoadDataset(filename) {
+
+        chart.clear();
+        chart = null;
+
+        chart = AmCharts.makeChart("chartdiv",
+            {
+                "type": "xy",
+                "dataLoader": {
+                    "url": filename,
+                    "format": "csv",
+                    "delimiter": ",",
+                    "useColumnNames": true
+                },
+                "valueAxes": [
+                    {
+                        "position": "bottom",
+                        "axisAlpha": 0
+                    }, {
+                        "minMaxMultiplier": 1.2,
+                        "axisAlpha": 0,
+                        "position": "left"
+                    }
+                ],
+                "startDuration": 1.5,
+                "graphs": [
+                    {
+                        "balloonText": "x:<b>[[x]]</b> y:<b>[[y]]</b><br>value:<b>[[value]]</b>",
+                        "bullet": "circle",
+                        "bulletBorderAlpha": 0.2,
+                        "bulletAlpha": 0.8,
+                        "colorField": "color",
+                        "lineAlpha": 0,
+                        "fillAlphas": 0,
+                        "valueField": 50,
+                        "xField": "x",
+                        "yField": "y",
+                        "maxBulletSize": 100
+                    }
+                ],
+                "marginLeft": 46,
+                "marginBottom": 35
+            });
+    }
+</script>
+
+<script type="text/javascript">
+    function ToDataMatrixJSon(chart) {
+
+        var samples = new Array(chart.dataProvider.length);
+        for (var i = 0; i < chart.dataProvider.length; i++)
+            samples[i] = new Array(chart.dataProvider[i].x, chart.dataProvider[i].y);
+
+        return JSON.stringify({ "matrix": samples });
+    }
+</script>
+
+<script type="text/javascript">
+    function DisableButtons(disable) {
+
+        document.getElementById('Cluster').disabled = disable;
+        document.getElementById('JainDataset').disabled = disable;
+        document.getElementById('pathBasedDataset').disabled = disable;
+        document.getElementById('spiralDataset').disabled = disable;
+        document.getElementById('S1Dataset').disabled = disable;
+        document.getElementById('ZahnDataset').disabled = disable;
+        document.getElementById('ChameleonDataset').disabled = disable;
+
+    }
+
+</script>
+<script type="text/javascript">
+    function ColorAccordingToClusters(chart, clusters) {
+
+        var colorsCount = chart.colors.length;
+
+        for (var i = 0; i < chart.dataProvider.length; i++) {
+            var dp = chart.dataProvider[i];
+            var cluster = clusters[i];
+            dp.value = cluster;
+            if (cluster != 0) {
+                dp.color = chart.colors[cluster % colorsCount];
+            } else {
+
+                dp.color = "#000000";
+
+            }
+        }
+
+        chart.validateData();
+    }
+</script>
+
+<script type="text/javascript">
+    function Clusterize() {
+
+        DisableButtons(true);
+
+        //var dc = (document.getElementById('dc').value);
+        
+        var postMessage = "/api/Cluster/DPClusteringWithMultiManifold/EucleadianDistance";
+        //var postMessage = "/api/Cluster/DPClusteringWithKNN/EucleadianDistance";
+
+        var request = new XMLHttpRequest();
+        request.open("post", postMessage, false);
+
+        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        var json = ToDataMatrixJSon(chart);
+
+        request.send(json);
+        var clusters = JSON.parse(request.responseText);
+
+        ColorAccordingToClusters(chart, clusters);
+        DisableButtons(false);
+    }
+</script>

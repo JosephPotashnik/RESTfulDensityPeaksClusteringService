@@ -1,0 +1,45 @@
+﻿<h2>@ViewData["Title"]</h2>
+<h3>Fast Density Peak Clustering (FDPC, Rodriguez and Laio, 2014)</h3>
+
+<p>
+    Let (xi)i=1...N be the sample points. In the first step of FDPC the Euclidean distances dij
+    between each data points are computed. Then a distance cutoff, dc, is chosen to finally compute,
+    for each xi , the number of data points that are closer than dc to the point xi,
+    which is the Local Density for each xi: <b>ρ(xi),</b>.
+</p>
+
+<p>
+    In the second step, the minimum distance between the point xi and any other point with
+    higher density is calculated as <b>δi = minj:ρj>ρi (dij)</b>.
+</p>
+<p>
+    Cluster centers are found as outliers in the decision graph formed by (δ, ρ),
+    where outliers are the points sharing anomalously large density-delta values. Conventionally,
+    for the point xk with highest density, <b>δk = maxj (dij)</b>.
+</p>
+<p>
+    Finally, other points are assigned to the same cluster than their Nearest Point with
+    Higher Density.
+</p>
+<p>
+    In the implementation here, cluster centers are supposed to possess anomalous large δi if
+    <b>
+        δi > 3Var(δ)
+    </b>
+    and a reasonably large ρi, if <b>ρi > mean(ρ)</b>.
+</p>
+
+<p>
+    <b>Noise</b> (black colored in the graph): we first find for each cluster a border region, defined as the set of points assigned to that
+    cluster but being within a distance dc from data points belonging to other clusters. We then find,
+    for each cluster, the point of highest density within its border region.
+    We denote its density by <b>ρb</b>. The points of the cluster whose density is higher than ρb are considered
+    part of the cluster core (robust assignation). The others are considered part of the cluster halo
+    (suitable to be considered as noise).
+</p>
+<p>
+    Rodriguez and Laio recommend choosing the distance cuttoff, dc, so that the average number of neighbors
+    is around 1% to 2% of the total number of points. For datasets with small number of points, it might
+    be affected by large statistical errors. In the implementation here, I leave the choice of dc at the user's
+    discretion.
+</p>
