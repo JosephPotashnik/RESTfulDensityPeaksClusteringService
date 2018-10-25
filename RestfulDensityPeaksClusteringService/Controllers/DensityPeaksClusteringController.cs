@@ -30,7 +30,7 @@ namespace RestfulDensityPeaksClusteringService.Controllers
         {
             return DensityPeaksClusteringAlgorithms.KNN(m.Matrix, k, distanceType);
         }
-
+        /*
 
         [HttpPost]
         [Route("DPClustering/{cutoffDistance}/{distanceType}")]
@@ -64,5 +64,6 @@ namespace RestfulDensityPeaksClusteringService.Controllers
         {
             return DensityPeaksClusteringAlgorithms.DPClusteringWithMultiManifoldFromDistanceMatrix(dMatrix);
         }
+        */
     } 
 }
