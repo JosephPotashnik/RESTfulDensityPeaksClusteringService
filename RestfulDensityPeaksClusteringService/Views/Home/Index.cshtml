@@ -71,9 +71,14 @@
     <input type="button" id="ChameleonDataset" value="Chameleon Dataset" onclick="javascript:LoadDataset('chameleon.csv');" ;/>
 
     <div id="chartdiv"></div>
-    <div>
-        <input type="button" id="Cluster" value="Cluster!" onclick="javascript:Clusterize();" />
-    </div>
+<div>
+    <input type="button" id="KNNCluster" value="KNN Cluster!" onclick="javascript:Clusterize(0);" />
+    <input type="button" id="MultiManifoldCluster" value="Multi Manifold Cluster!" onclick="javascript:Clusterize(1);"/>
+    <label>k:</label>
+    <input type="number" id="k" value="k"/>
+    <label>M:</label>
+    <input type="number" id="M" value="M"/>
+</div>
 </body>
 
 <script type="text/javascript">
@@ -137,7 +142,8 @@
 <script type="text/javascript">
     function DisableButtons(disable) {
 
-        document.getElementById('Cluster').disabled = disable;
+        document.getElementById('MultiManifoldCluster').disabled = disable;
+        document.getElementById('KNNCluster').disabled = disable;
         document.getElementById('JainDataset').disabled = disable;
         document.getElementById('pathBasedDataset').disabled = disable;
         document.getElementById('spiralDataset').disabled = disable;
@@ -171,14 +177,20 @@
 </script>
 
 <script type="text/javascript">
-    function Clusterize() {
+    function Clusterize(clusteringType) {
 
         DisableButtons(true);
 
-        //var dc = (document.getElementById('dc').value);
-        
-        var postMessage = "/api/Cluster/DPClusteringWithMultiManifold/EucleadianDistance";
-        //var postMessage = "/api/Cluster/DPClusteringWithKNN/EucleadianDistance";
+        var k = (document.getElementById('k').value.toString());
+        var M = (document.getElementById('M').value.toString());
+        if (k.length == 0) k = "0";
+        if (M.length == 0) M = "0";
+        var postMessage;
+
+        if (clusteringType == 1)
+            postMessage = "/api/Cluster/MultiManifold/" + k + "/" + M + "/EuclideanDistance";
+        else
+            postMessage = "/api/Cluster/KNN/" + k + "/EuclideanDistance";
 
         var request = new XMLHttpRequest();
         request.open("post", postMessage, false);

@@ -16,19 +16,19 @@ namespace RestfulDensityPeaksClusteringService.Controllers
         //Functions From Data (Distance is computed here).
 
         [HttpPost]
-        [Route("DPClusteringWithMultiManifold/{distanceType}")]
-        public int[] DPClusteringWithMultiManifold([FromBody] DataMatrix<float> m,
+        [Route("MultiManifold/{k}/{M}/{distanceType}")]
+        public int[] MultiManifold([FromBody] DataMatrix<float> mat, int k = 0, int M = 0, 
             DistanceFunctionType distanceType = DistanceFunctionType.EuclideanDistance)
         {
-            return DensityPeaksClusteringAlgorithms.MultiManifold(m.Matrix, 0, 0, distanceType);
+            return DensityPeaksClusteringAlgorithms.MultiManifold(mat.Matrix, k, M, distanceType);
         }
 
         [HttpPost]
-        [Route("DPClusteringWithKNN/{distanceType}")]
-        public int[] DPClusteringWithKNN([FromBody] DataMatrix<float> m,
+        [Route("KNN/{k}/{distanceType}")]
+        public int[] KNN([FromBody] DataMatrix<float> m, int k = 0,
             DistanceFunctionType distanceType = DistanceFunctionType.EuclideanDistance)
         {
-            return DensityPeaksClusteringAlgorithms.KNN(m.Matrix, distanceType);
+            return DensityPeaksClusteringAlgorithms.KNN(m.Matrix, k, distanceType);
         }
 
 
