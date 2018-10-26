@@ -16,19 +16,19 @@ namespace RestfulDensityPeaksClusteringService.Controllers
         //Functions From Data (Distance is computed here).
 
         [HttpPost]
-        [Route("MultiManifold/{k}/{M}/{distanceType}")]
-        public int[] MultiManifold([FromBody] DataMatrix<float> mat, int k = 0, int M = 0, 
+        [Route("MultiManifold/{k}/{M}/{tuningType}/{distanceType}")]
+        public int[] MultiManifold([FromBody] DataMatrix<float> mat, int k = 0, int M = 0, ClusterCentersTuningType tuningType = ClusterCentersTuningType.FineTuning,
             DistanceFunctionType distanceType = DistanceFunctionType.EuclideanDistance)
         {
-            return DensityPeaksClusteringAlgorithms.MultiManifold(mat.Matrix, k, M, distanceType);
+            return DensityPeaksClusteringAlgorithms.MultiManifold(mat.Matrix, k, M, tuningType, distanceType);
         }
 
         [HttpPost]
-        [Route("KNN/{k}/{distanceType}")]
-        public int[] KNN([FromBody] DataMatrix<float> m, int k = 0,
+        [Route("KNN/{k}/{tuningType}/{distanceType}")]
+        public int[] KNN([FromBody] DataMatrix<float> m, int k = 0, ClusterCentersTuningType tuningType = ClusterCentersTuningType.FineTuning,
             DistanceFunctionType distanceType = DistanceFunctionType.EuclideanDistance)
         {
-            return DensityPeaksClusteringAlgorithms.KNN(m.Matrix, k, distanceType);
+            return DensityPeaksClusteringAlgorithms.KNN(m.Matrix, k, tuningType, distanceType);
         }
         /*
 

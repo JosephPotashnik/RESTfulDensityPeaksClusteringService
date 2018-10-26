@@ -78,6 +78,10 @@
     <input type="number" id="k" value="k"/>
     <label>M:</label>
     <input type="number" id="M" value="M"/>
+    <SELECT id="TuningType">
+        <OPTION>FineTuning</OPTION>
+        <OPTION>CoarseTuning </OPTION>
+    </SELECT>
 </div>
 </body>
 
@@ -186,11 +190,12 @@
         if (k.length == 0) k = "0";
         if (M.length == 0) M = "0";
         var postMessage;
-
+        var tuningType = document.getElementById('TuningType').value;
+ 
         if (clusteringType == 1)
-            postMessage = "/api/Cluster/MultiManifold/" + k + "/" + M + "/EuclideanDistance";
+            postMessage = "/api/Cluster/MultiManifold/" + k + "/" + M + "/" + tuningType + "/EuclideanDistance";
         else
-            postMessage = "/api/Cluster/KNN/" + k + "/EuclideanDistance";
+            postMessage = "/api/Cluster/KNN/" + k + "/" + tuningType + "/EuclideanDistance";
 
         var request = new XMLHttpRequest();
         request.open("post", postMessage, false);
